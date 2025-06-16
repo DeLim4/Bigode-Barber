@@ -45,7 +45,8 @@ body::after {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    padding: 20px;
+    width: 100%;
+    /* padding: 20px; */
     position: relative;
     z-index: 1;
 }
@@ -524,7 +525,7 @@ a:hover {
 /* Responsividade */
 @media (max-width: 480px) {
     .tab-content {
-        max-width: 90%;
+        
         padding: 15px;
     }
     
@@ -588,7 +589,7 @@ a:hover {
 
 .barbeiro-card {
     position: relative;
-    background-image: url(/assets/images/barber.jpg);
+    background-image: url(/barber-app-frontend/assets/images/barber.jpg);
     background-size: cover;
     background-repeat: no-repeat;
     min-height: 20vh;

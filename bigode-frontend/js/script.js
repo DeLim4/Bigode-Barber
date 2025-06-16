@@ -425,10 +425,7 @@ class BarberApp {
                 <button class="btn-entrar" onclick="loadTab('login')">Entrar</button>
                 
                 <!-- Ícone Instagram no canto superior direito -->
-                <div class="instagram-icon">
-                    <a href="https://www.instagram.com/gabriel_lima20/" target="_blank" rel="noopener noreferrer">
-                         <img src="assets/images/instagram-new2.png" alt="Instagram">
-                    </a>
+                <div class="instagram-icon"><a href="https://www.instagram.com/gabriel_lima20/" target="_blank" rel="noopener noreferrer"><img src="assets/images/instagram-new2.png" alt="Instagram"></a>
                 </div>
                 
                 <!-- Logo circular -->
@@ -464,10 +461,7 @@ class BarberApp {
                 </div>
                 
                 <!-- Ícone Instagram no canto superior direito -->
-             <div class="instagram-icon">
-                    <a href="https://www.instagram.com/gabriel_lima20/" target="_blank" rel="noopener noreferrer">
-                         <img src="assets/images/instagram-new2.png" alt="Instagram">
-                    </a>
+             <div class="instagram-icon"><a href="https://www.instagram.com/gabriel_lima20/" target="_blank" rel="noopener noreferrer"><img src="assets/images/instagram-new2.png" alt="Instagram"></a>
                 </div>
                 <!-- Logo circular -->
                 <div class="logo">

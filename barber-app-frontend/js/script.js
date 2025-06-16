@@ -455,8 +455,7 @@ class BarberApp {
         return `
             <div class="tab-content active" id="perfil-usuario">
                 <div class="form-container">
-                    <!-- Título da tela -->
-                    <h2 class="perfil-titulo">TELA DE PERFIL DO USUÁRIO</h2>
+                  
                     
                     <!-- Botão voltar no canto superior esquerdo -->
                     <button class="btn-voltar-perfil" onclick="goBack()">

@@ -998,10 +998,10 @@ class BarberApp {
                     <h2>Contato</h2>
                     
                     <div class="agendamento-info">
-                        <p><strong>Telefone:</strong> (11) 99999-9999</p>
-                        <p><strong>WhatsApp:</strong> (11) 99999-9999</p>
-                        <p><strong>Instagram:</strong> @bigodecortes</p>
-                        <p><strong>Endereço:</strong> Rua das Barbearias, 123</p>
+                    
+                        <p><strong>WhatsApp:</strong> (11) 98404-3315</p>
+                        <p><strong>Instagram:</strong> @gabriel_lima20</p>
+                        <p><strong>Endereço:</strong> Rua padre Silverio paraopeba, 209</p>
                     </div>
                 </div>
             </div>

@@ -589,7 +589,7 @@ a:hover {
 
 .barbeiro-card {
     position: relative;
-    background-image: url(/barber-app-frontend/assets/images/barber.jpg);
+    background-image: url(/assets/images/barber.jpg);
     background-size: cover;
     background-repeat: no-repeat;
     min-height: 20vh;

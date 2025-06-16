@@ -1,0 +1,758 @@
+/* Reset e configurações básicas */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-image: url(../assets/images/background.png);
+    background: rgba(26, 26, 26, 0) ;
+    color: #ffffff;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Background com elementos decorativos da barbearia */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('../assets/images/background.png') center/cover no-repeat;
+    opacity: 0.9;
+    z-index: -2;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(26, 26, 26, 0.8) 100%);
+    z-index: -1;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Estilos para as abas */
+.tab-content {
+    display: none;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    animation: fadeIn 0.5s ease-in-out;
+    position: relative;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Botão de entrada no canto superior esquerdo */
+.btn-entrar {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.01);
+    color: white;
+    font-weight: bold;
+    padding: 8px 20px;
+    border: 1px solid rgba(0, 68, 255);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.btn-entrar:hover {
+    background: rgba(0, 0, 0, 0.9);
+    border-color: #007bff;
+}
+
+/* Ícone do usuário no canto superior esquerdo (para home logado) */
+.user-icon {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    border: 2px solid #007bff;
+}
+
+.user-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
+
+/* Ícone do Instagram no canto superior direito */
+.instagram-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    /* background: #007bff; */
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    color: white;
+    font-weight: bold;
+}
+
+.instagram-icon img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+}
+
+.instagram-icon:hover {
+    
+    transform: scale(1.1);
+}
+
+/* Logo circular com borda - estilo Figma */
+.logo {
+    width: 201px;
+    height: 201px;
+    margin: 0 auto 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+ 
+}
+
+.logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Ilustração do barbeiro */
+.illustration {
+    width: 280px;
+    margin: 20px auto 30px;
+    display: block;
+    filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.3));
+}
+
+/* Títulos */
+h1, h2 {
+    margin-bottom: 30px;
+    font-weight: 600;
+    color: #ffffff;
+    text-align: center;
+}
+
+h1 {
+    font-size: 1.8em;
+    line-height: 1.3;
+    margin-bottom: 40px;
+}
+
+h2 {
+    font-size: 1.6em;
+    margin-bottom: 20px;
+}
+
+/* Botão principal azul - estilo Figma */
+.btn-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 15px auto;
+    display: block;
+    width: 100%;
+    max-width: 280px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+/* Texto de rodapé */
+.footer-text {
+    margin: 30px 0 20px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+}
+
+/* Botão de contato */
+.btn-contato {
+    background: rgba(0, 0, 0, 0.01);
+    color: white;
+    font-weight: bold;
+    padding: 5px 30px;
+    border: 1px solid rgba(0, 68, 255);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-contato:hover {
+    background: rgba(108, 117, 125, 1);
+    border-color: #6c757d;
+}
+
+/* Container para formulários - estilo Figma */
+.form-container {
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 20px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="tel"] {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid rgba(0, 123, 255, 0.5);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #007bff;
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+}
+
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Checkbox personalizado */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    text-align: left;
+    font-size: 14px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.2);
+}
+
+/* Botões de serviço - estilo Figma */
+.servicos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.btn-servico {
+    background: rgba(0, 0, 0, 0.01);
+    color: white;
+    padding: 15px 20px;
+    border: 2px solid #007bff;
+    border-radius: 0px 25px 25px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.btn-servico::after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    background-color: transparent;
+}
+
+.btn-servico.selected::after {
+    background-color: #ffffff;
+    display: block;
+}
+
+/* Estilo aplicado ao botão quando estiver selecionado */
+.btn-servico.selected {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+
+.btn-servico:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+/* Calendário - estilo Figma */
+.calendario {
+    margin: 20px 0;
+    background: rgba(0, 123, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid rgba(0, 123, 255, 0.3);
+}
+
+.mes-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.btn-nav {
+    background: rgba(0, 123, 255, 0.3);
+    border: 1px solid rgba(0, 123, 255, 0.5);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-nav:hover {
+    background: rgba(0, 123, 255, 0.5);
+}
+
+.dias-semana {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.dias-semana span {
+    text-align: center;
+    font-weight: bold;
+    padding: 8px;
+    font-size: 12px;
+    color: #007bff;
+}
+
+.dias-mes {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.dia {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    text-align: center;
+}
+
+.dia:hover {
+    background: rgba(0, 123, 255, 0.3);
+}
+
+.dia.selected {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-color: #007bff;
+    box-shadow: 0 2px 10px rgba(0, 123, 255, 0.4);
+}
+
+.dia.empty {
+    background: transparent;
+    border: none;
+    cursor: default;
+}
+
+/* Grade de horários - estilo Figma */
+.horarios-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.btn-horario {
+    background: rgba(0, 123, 255, 0.2);
+    border: 2px solid rgba(0, 123, 255, 0.5);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-horario:hover {
+    background: rgba(0, 123, 255, 0.4);
+    border-color: #007bff;
+    transform: translateY(-2px);
+}
+
+.btn-horario.selected {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-color: #007bff;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+}
+
+/* Informações de agendamento */
+.agendamento-info {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: left;
+    border: 1px solid rgba(0, 123, 255, 0.3);
+}
+
+.agendamento-info p {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.agendamento-info strong {
+    color: #007bff;
+}
+
+/* Botão voltar */
+.btn-voltar {
+    background: rgba(108, 117, 125, 0.8);
+    color: white;
+    padding: 12px 30px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.btn-voltar:hover {
+    background: rgba(108, 117, 125, 1);
+    transform: translateY(-2px);
+}
+
+/* Links */
+a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+    .tab-content {
+        max-width: 90%;
+        padding: 15px;
+    }
+    
+    .illustration {
+        width: 220px;
+    }
+    
+    .logo {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .btn-primary {
+        padding: 12px 30px;
+        font-size: 14px;
+    }
+    
+    h1 {
+        font-size: 1.4em;
+    }
+    
+    h2 {
+        font-size: 1.2em;
+    }
+    
+    .horarios-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .btn-horario {
+        padding: 12px;
+        font-size: 14px;
+    }
+    
+    .btn-entrar,
+    .instagram-icon {
+        top: 10px;
+    }
+    
+    .btn-entrar {
+        left: 10px;
+        padding: 6px 15px;
+        font-size: 12px;
+    }
+    
+    .instagram-icon {
+        right: 10px;
+        width: 35px;
+        height: 35px;
+    }
+}
+
+/* Estilos para seleção de barbeiro */
+.barbeiros-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.barbeiro-card {
+    position: relative;
+    background-image: url(/assets/images/barber.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 20vh;
+    border-radius: 15px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    overflow: hidden;
+}
+
+.barbeiro-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 129, 235, 0.288); /* cor da cobertura */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 15px;
+    z-index: 1;
+}
+
+.barbeiro-card:hover::after {
+    opacity: 1;
+}
+
+.barbeiro-card p {
+    margin-top: 100%;
+    font-weight: bold;
+    font-size: 1.1em;
+    position: relative;
+    z-index: 2; /* para ficar acima do overlay */
+}
+
+.barbeiro-card.selected {
+    border-color: #007bff;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+}
+
+/* Estilos para tela de confirmação de email e agendamento */
+.success-message {
+    background: rgba(0, 123, 255, 0.1);
+    border-radius: 15px;
+    padding: 30px 20px;
+    margin: 20px 0;
+    text-align: center;
+    border: 1px solid rgba(0, 123, 255, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.check-icon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.success-message p {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #ffffff;
+}
+
+.success-message p:first-of-type {
+    font-weight: bold;
+    font-size: 18px;
+    color: #007bff;
+}
+
+/* Estilos para a tela de perfil do usuário */
+.perfil-titulo {
+    font-size: 1.2em;
+    color: #ffffff;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-voltar-perfil {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.btn-voltar-perfil img {
+    width: 30px;
+    height: 30px;
+    transition: transform 0.3s ease;
+}
+
+.btn-voltar-perfil:hover img {
+    transform: scale(1.1);
+}
+
+.instagram-icon-perfil {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.instagram-icon-perfil img {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+.instagram-icon-perfil:hover img {
+    transform: scale(1.1);
+}
+
+.saudacao {
+    font-size: 1.8em;
+    color: #ffffff;
+    margin: 20px 0;
+}
+
+.opcoes-perfil {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 30px 0;
+}
+
+.btn-opcao-perfil {
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    padding: 15px 20px;
+    border: 2px solid #007bff;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    width: 100%;
+    text-align: center;
+}
+
+.btn-opcao-perfil:hover {
+    background: rgba(0, 123, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}

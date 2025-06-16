@@ -69,6 +69,9 @@ class BarberApp {
             case "cadastro":
                 content = this.getCadastroContent();
                 break;
+            case "cadastro-confirmado":
+                content = this.getCadastroConfirmadoContent();
+                break;
             case "esqueci-senha":
                 content = this.getEsqueciSenhaContent();
                 break;
@@ -218,6 +221,13 @@ class BarberApp {
                     submitBtn.disabled = false;
                     this.isLoggedIn = true; // Atualiza o estado de login
                     this.loadTab("home-logado"); // Redireciona para a home logada
+                }, 2000);
+            } else if (form.id === "cadastro-form") {
+                // Simulação de cadastro bem-sucedido
+                setTimeout(() => {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                    this.loadTab("cadastro-confirmado"); // Redireciona para a tela de confirmação de cadastro
                 }, 2000);
             } else {
                 // Outros formulários
@@ -380,7 +390,7 @@ class BarberApp {
                 <button class="btn-entrar" onclick="loadTab('login')">Entrar</button>
                 
                 <!-- Ícone Instagram no canto superior direito -->
-                <div class="instagram-icon"><a href="https://www.instagram.com/gabriel_lima20/"><img src="assets/images/instagram-new2.png" alt="Instagram"></a></div>
+                <div class="instagram-icon"><img src="assets/images/instagram-new2.png" alt="Instagram"></div>
                 
                 <!-- Logo circular -->
                 <div class="logo">
@@ -445,7 +455,8 @@ class BarberApp {
         return `
             <div class="tab-content active" id="perfil-usuario">
                 <div class="form-container">
-                   
+                    <!-- Título da tela -->
+                    <h2 class="perfil-titulo">TELA DE PERFIL DO USUÁRIO</h2>
                     
                     <!-- Botão voltar no canto superior esquerdo -->
                     <button class="btn-voltar-perfil" onclick="goBack()">
@@ -558,6 +569,34 @@ class BarberApp {
                     </form>
                     
                     <p>Já tem conta? <a href="#" onclick="loadTab('login')">Entre agora</a></p>
+                </div>
+            </div>
+        `;
+    }
+
+    // Conteúdo da tela de confirmação de cadastro
+    getCadastroConfirmadoContent() {
+        return `
+            <div class="tab-content active" id="cadastro-confirmado">
+                <div class="form-container">
+                    <!-- Botão voltar no canto superior esquerdo -->
+                    <button class="btn-voltar-perfil" onclick="loadTab('login')">
+                        <img src="assets/images/back-icon.png" alt="Voltar">
+                    </button>
+                    
+                    <!-- Logo -->
+                    <div class="logo">
+                        <img src="assets/images/logo-bigode-new.png" alt="Logo Bigode Cortes">
+                    </div>
+                    
+                    <h2>Cadastro Realizado!</h2>
+                    <div class="success-message">
+                        <img src="assets/images/verifica.png" alt="Verificado" class="check-icon">
+                        <p>Seu cadastro foi realizado com sucesso!</p>
+                        <p>Agora você pode fazer login e agendar seus serviços.</p>
+                    </div>
+                    
+                    <button class="btn-primary" onclick="loadTab('login')">Fazer Login</button>
                 </div>
             </div>
         `;

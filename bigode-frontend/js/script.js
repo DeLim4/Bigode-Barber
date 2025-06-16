@@ -1,396 +1,435 @@
 // Classe para gerenciar as abas da aplicação
 
 class BarberApp {
-    constructor() {
-        this.app = document.getElementById("app");
-        this.currentTab = "home-deslogado";
-        this.selectedServices = [];
-        this.selectedBarber = null;
-        this.selectedDate = null;
-        this.selectedHour = null;
-        this.isLoggedIn = false; // Controle de estado de login
-        this.userName = "Usuário"; // Nome do usuário logado
-        this.init();
+  constructor() {
+    this.app = document.getElementById("app");
+    this.currentTab = "home-deslogado";
+    this.selectedServices = [];
+    this.selectedBarber = null;
+    this.selectedDate = null;
+    this.selectedHour = null;
+    this.isLoggedIn = false; // Controle de estado de login
+    this.userName = "Usuário"; // Nome do usuário logado
+    this.init();
 
-        // Inicializar EmailJS
-        this.initEmailJS();
+    // Inicializar EmailJS
+    this.initEmailJS();
+  }
+
+  init() {
+    // Torna as funções globais para serem acessíveis pelos botões HTML
+    window.loadTab = this.loadTab.bind(this);
+    window.goBack = this.goBack.bind(this);
+    window.toggleService = this.toggleService.bind(this);
+    window.selectBarber = this.selectBarber.bind(this);
+    window.selectDate = this.selectDate.bind(this);
+    window.selectHour = this.selectHour.bind(this);
+    window.sendPasswordRecoveryEmail =
+      this.sendPasswordRecoveryEmail.bind(this); // se for chamada direta
+    window.loadUserProfile = this.loadUserProfile.bind(this); // Nova função para carregar perfil
+
+    // Carrega a aba inicial
+    this.loadTab("home-deslogado");
+  }
+
+  // Inicializar EmailJS com seu Public Key
+  initEmailJS() {
+    emailjs.init("sPePZVcNEuuxnF3uC"); // substitua pelo seu Public Key
+  }
+
+  // Função para enviar email de recuperação de senha
+  sendPasswordRecoveryEmail(email, link) {
+    return emailjs
+      .send("service_46lfx7j", "template_2098f09", {
+        to_email: email,
+        message: `Você solicitou a recuperação de senha no Bigode Cortes.\nClique no link abaixo para redefinir sua senha:\n\n${link}`,
+      })
+      .then((response) => {
+        console.log("E-mail enviado com sucesso:", response);
+      })
+      .catch((error) => {
+        console.error("Erro ao enviar e-mail:", error);
+      });
+  }
+
+  // Função para carregar o conteúdo das abas
+  loadTab(tabName) {
+    this.currentTab = tabName;
+    let content = "";
+
+    switch (tabName) {
+      case "home-deslogado":
+        content = this.getHomeDeslogadoContent();
+        break;
+      case "home-logado":
+        content = this.getHomeLogadoContent();
+        break;
+      case "perfil-usuario":
+        content = this.getPerfilUsuarioContent();
+        break;
+      case "login":
+        content = this.getLoginContent();
+        break;
+      case "cadastro":
+        content = this.getCadastroContent();
+        break;
+      case "cadastro-confirmado":
+        content = this.getCadastroConfirmadoContent();
+        break;
+      case "esqueci-senha":
+        content = this.getEsqueciSenhaContent();
+        break;
+      case "email-enviado":
+        content = this.getEmailEnviadoContent();
+        break;
+      case "agendar-horario":
+        content = this.getAgendarHorarioContent();
+        break;
+      case "selecionar-servico":
+        content = this.getSelecionarServicoContent();
+        break;
+      case "selecionar-barbeiro":
+        content = this.getSelecionarBarbeiroContent();
+        break;
+      case "selecionar-data":
+        content = this.getSelecionarDataContent();
+        break;
+      case "selecionar-horario":
+        content = this.getSelecionarHorarioContent();
+        break;
+      case "confirmacao":
+        content = this.getConfirmacaoContent();
+        break;
+      case "agendamento-confirmado":
+        content = this.getAgendamentoConfirmadoContent();
+        break;
+      case "contato":
+        content = this.getContatoContent();
+        break;
+      default:
+        content = this.getNotFoundContent();
     }
 
-    init() {
-        // Torna as funções globais para serem acessíveis pelos botões HTML
-        window.loadTab = this.loadTab.bind(this);
-        window.goBack = this.goBack.bind(this);
-        window.toggleService = this.toggleService.bind(this);
-        window.selectBarber = this.selectBarber.bind(this);
-        window.selectDate = this.selectDate.bind(this);
-        window.selectHour = this.selectHour.bind(this);
-        window.sendPasswordRecoveryEmail = this.sendPasswordRecoveryEmail.bind(this); // se for chamada direta
-        window.loadUserProfile = this.loadUserProfile.bind(this); // Nova função para carregar perfil
+    this.app.innerHTML = content;
+    this.addEventListeners();
+  }
 
-        // Carrega a aba inicial
-        this.loadTab("home-deslogado");
+  // Função para carregar o perfil do usuário
+  loadUserProfile() {
+    this.loadTab("perfil-usuario");
+  }
+
+  // Função para voltar à tela anterior
+  goBack() {
+    // Lógica para voltar à tela anterior, pode ser mais complexa com histórico
+    if (this.isLoggedIn) {
+      this.loadTab("home-logado");
+    } else {
+      this.loadTab("home-deslogado");
+    }
+  }
+
+  // Adiciona event listeners após carregar o conteúdo
+  addEventListeners() {
+    const forms = document.querySelectorAll("form");
+    forms.forEach((form) => {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.handleFormSubmit(form);
+      });
+    });
+
+    // Adicionar lógica para seleção de múltiplos serviços
+    if (this.currentTab === "selecionar-servico") {
+      const servicoButtons = document.querySelectorAll(".btn-servico");
+      servicoButtons.forEach((button) => {
+        if (this.selectedServices.includes(button.dataset.servico)) {
+          button.classList.add("selected");
+        }
+      });
     }
 
-    // Inicializar EmailJS com seu Public Key
-    initEmailJS() {
-        emailjs.init("sPePZVcNEuuxnF3uC"); // substitua pelo seu Public Key
+    // Adicionar lógica para seleção de barbeiro
+    if (this.currentTab === "selecionar-barbeiro") {
+      const barberCards = document.querySelectorAll(".barbeiro-card");
+      barberCards.forEach((card) => {
+        if (this.selectedBarber === card.dataset.barber) {
+          card.classList.add("selected");
+        }
+      });
     }
 
-    // Função para enviar email de recuperação de senha
-    sendPasswordRecoveryEmail(email, link) {
-        return emailjs.send("service_46lfx7j", "template_2098f09", {
-            to_email: email,
-            message: `Você solicitou a recuperação de senha no Bigode Cortes.\nClique no link abaixo para redefinir sua senha:\n\n${link}`
-        }).then((response) => {
-            console.log("E-mail enviado com sucesso:", response);
-        }).catch((error) => {
-            console.error("Erro ao enviar e-mail:", error);
+    // Adicionar lógica para seleção de data
+    if (this.currentTab === "selecionar-data") {
+      this.initCalendar();
+    }
+
+    // Adicionar lógica para seleção de horário
+    if (this.currentTab === "selecionar-horario") {
+      const horarioButtons = document.querySelectorAll(".btn-horario");
+      horarioButtons.forEach((button) => {
+        if (this.selectedHour === button.textContent) {
+          button.classList.add("selected");
+        }
+
+        // Corrigido: Adicionando evento de clique diretamente aqui
+        button.addEventListener("click", () => {
+          this.selectHour(button.textContent);
+
+          // Atualizar visualmente a seleção
+          horarioButtons.forEach((btn) => btn.classList.remove("selected"));
+          button.classList.add("selected");
+
+          // Habilitar o botão de continuar
+          const continueBtn = document.querySelector(
+            "#selecionar-horario .btn-primary"
+          );
+          if (continueBtn) {
+            continueBtn.removeAttribute("disabled");
+          }
         });
+      });
+    }
+  }
+
+  // Manipula o envio de formulários
+  handleFormSubmit(form) {
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+
+    console.log("Dados do formulário:", data);
+
+    const submitBtn = form.querySelector('.btn-primary[type="submit"]');
+    if (submitBtn) {
+      const originalText = submitBtn.textContent;
+      submitBtn.innerHTML = "Enviando...";
+      submitBtn.disabled = true;
+
+      // Verificar qual formulário está sendo enviado
+      if (form.id === "esqueci-senha-form") {
+        // Enviar email de recuperação de senha
+        this.sendPasswordRecoveryEmail(data.email)
+          .then(() => {
+            // Redirecionar para a tela de confirmação de email enviado
+            this.loadTab("email-enviado");
+          })
+          .catch((error) => {
+            console.error("Erro ao enviar email:", error);
+            alert("Erro ao enviar email. Por favor, tente novamente.");
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+          });
+      } else if (form.id === "login-form") {
+        // Simulação de login bem-sucedido
+        setTimeout(() => {
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+          this.isLoggedIn = true; // Atualiza o estado de login
+          this.loadTab("home-logado"); // Redireciona para a home logada
+        }, 2000);
+      } else if (form.id === "cadastro-form") {
+        // Simulação de cadastro bem-sucedido
+        setTimeout(() => {
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+          this.loadTab("cadastro-confirmado"); // Redireciona para a tela de confirmação de cadastro
+        }, 2000);
+      } else {
+        // Outros formulários
+        setTimeout(() => {
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+        }, 2000);
+      }
+    }
+  }
+
+  // Função para selecionar/desselecionar serviços
+  toggleService(serviceName) {
+    const index = this.selectedServices.indexOf(serviceName);
+    if (index > -1) {
+      this.selectedServices.splice(index, 1); // Remover
+    } else {
+      this.selectedServices.push(serviceName); // Adicionar
+    }
+    this.loadTab("selecionar-servico"); // Recarrega a aba para atualizar a seleção visual
+  }
+
+  // Função para selecionar barbeiro
+  selectBarber(barberName) {
+    this.selectedBarber = barberName;
+    this.loadTab("selecionar-barbeiro"); // Recarrega a aba para atualizar a seleção visual
+  }
+
+  // Função para selecionar data
+  selectDate(date) {
+    this.selectedDate = date;
+
+    // Remover seleção anterior
+    const allDays = document.querySelectorAll(".dia");
+    allDays.forEach((day) => {
+      day.classList.remove("selected");
+    });
+
+    // Adicionar seleção ao dia clicado
+    const clickedDay = document.querySelector(`.dia[data-date="${date}"]`);
+    if (clickedDay) {
+      clickedDay.classList.add("selected");
     }
 
-    // Função para carregar o conteúdo das abas
-    loadTab(tabName) {
-        this.currentTab = tabName;
-        let content = "";
+    // Habilitar o botão de continuar
+    const continueBtn = document.querySelector("#selecionar-data .btn-primary");
+    if (continueBtn) {
+      continueBtn.removeAttribute("disabled");
+    }
+  }
 
-        switch (tabName) {
-            case "home-deslogado":
-                content = this.getHomeDeslogadoContent();
-                break;
-            case "home-logado":
-                content = this.getHomeLogadoContent();
-                break;
-            case "perfil-usuario":
-                content = this.getPerfilUsuarioContent();
-                break;
-            case "login":
-                content = this.getLoginContent();
-                break;
-            case "cadastro":
-                content = this.getCadastroContent();
-                break;
-            case "cadastro-confirmado":
-                content = this.getCadastroConfirmadoContent();
-                break;
-            case "esqueci-senha":
-                content = this.getEsqueciSenhaContent();
-                break;
-            case "email-enviado":
-                content = this.getEmailEnviadoContent();
-                break;
-            case "agendar-horario":
-                content = this.getAgendarHorarioContent();
-                break;
-            case "selecionar-servico":
-                content = this.getSelecionarServicoContent();
-                break;
-            case "selecionar-barbeiro":
-                content = this.getSelecionarBarbeiroContent();
-                break;
-            case "selecionar-data":
-                content = this.getSelecionarDataContent();
-                break;
-            case "selecionar-horario":
-                content = this.getSelecionarHorarioContent();
-                break;
-            case "confirmacao":
-                content = this.getConfirmacaoContent();
-                break;
-            case "agendamento-confirmado":
-                content = this.getAgendamentoConfirmadoContent();
-                break;
-            case "contato":
-                content = this.getContatoContent();
-                break;
-            default:
-                content = this.getNotFoundContent();
+  // Função para selecionar horário
+  selectHour(hour) {
+    this.selectedHour = hour;
+  }
+
+  // Inicializar o calendário com o mês atual
+  initCalendar() {
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+    this.renderCalendar(currentMonth, currentYear);
+
+    // Adicionar event listeners para navegação do calendário
+    const prevMonthBtn = document.querySelector(".btn-prev-month");
+    const nextMonthBtn = document.querySelector(".btn-next-month");
+
+    if (prevMonthBtn && nextMonthBtn) {
+      prevMonthBtn.addEventListener("click", () => {
+        const monthYearText =
+          document.querySelector(".mes-ano-text").textContent;
+        const [month, year] = this.parseMonthYear(monthYearText);
+
+        let newMonth = month - 1;
+        let newYear = year;
+
+        if (newMonth < 0) {
+          newMonth = 11;
+          newYear--;
         }
 
-        this.app.innerHTML = content;
-        this.addEventListeners();
-    }
+        this.renderCalendar(newMonth, newYear);
+      });
 
-    // Função para carregar o perfil do usuário
-    loadUserProfile() {
-        this.loadTab("perfil-usuario");
-    }
+      nextMonthBtn.addEventListener("click", () => {
+        const monthYearText =
+          document.querySelector(".mes-ano-text").textContent;
+        const [month, year] = this.parseMonthYear(monthYearText);
 
-    // Função para voltar à tela anterior
-    goBack() {
-        // Lógica para voltar à tela anterior, pode ser mais complexa com histórico
-        if (this.isLoggedIn) {
-            this.loadTab("home-logado");
-        } else {
-            this.loadTab("home-deslogado");
+        let newMonth = month + 1;
+        let newYear = year;
+
+        if (newMonth > 11) {
+          newMonth = 0;
+          newYear++;
         }
+
+        this.renderCalendar(newMonth, newYear);
+      });
+    }
+  }
+
+  // Renderizar o calendário para um mês específico
+  renderCalendar(month, year) {
+    const monthNames = [
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro",
+    ];
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+
+    // Atualizar texto do mês e ano
+    const monthYearText = document.querySelector(".mes-ano-text");
+    if (monthYearText) {
+      monthYearText.textContent = `${monthNames[month]} ${year}`;
     }
 
-    // Adiciona event listeners após carregar o conteúdo
-    addEventListeners() {
-        const forms = document.querySelectorAll("form");
-        forms.forEach((form) => {
-            form.addEventListener("submit", (e) => {
-                e.preventDefault();
-                this.handleFormSubmit(form);
-            });
+    // Gerar os dias do calendário
+    let daysHTML = "";
+
+    // Espaços em branco para os dias antes do primeiro dia do mês
+    for (let i = 0; i < firstDayOfMonth; i++) {
+      daysHTML += '<div class="dia empty"></div>';
+    }
+
+    // Dias do mês
+    for (let i = 1; i <= daysInMonth; i++) {
+      const date = `${year}-${(month + 1).toString().padStart(2, "0")}-${i
+        .toString()
+        .padStart(2, "0")}`;
+      const isSelected = date === this.selectedDate ? "selected" : "";
+      daysHTML += `<div class="dia ${isSelected}" data-date="${date}">${i}</div>`;
+    }
+
+    // Atualizar o conteúdo do calendário
+    const diasMesElement = document.querySelector(".dias-mes");
+    if (diasMesElement) {
+      diasMesElement.innerHTML = daysHTML;
+
+      // Adicionar event listeners aos dias após renderizar
+      const dias = diasMesElement.querySelectorAll(".dia:not(.empty)");
+      dias.forEach((dia) => {
+        dia.addEventListener("click", () => {
+          const date = dia.getAttribute("data-date");
+          this.selectDate(date);
         });
-        
-
-        // Adicionar lógica para seleção de múltiplos serviços
-        if (this.currentTab === "selecionar-servico") {
-            const servicoButtons = document.querySelectorAll(".btn-servico");
-            servicoButtons.forEach(button => {
-                if (this.selectedServices.includes(button.dataset.servico)) {
-                    button.classList.add("selected");
-                }
-            });
-        }
-
-        // Adicionar lógica para seleção de barbeiro
-        if (this.currentTab === "selecionar-barbeiro") {
-            const barberCards = document.querySelectorAll(".barbeiro-card");
-            barberCards.forEach(card => {
-                if (this.selectedBarber === card.dataset.barber) {
-                    card.classList.add("selected");
-                }
-            });
-        }
-        
-        // Adicionar lógica para seleção de data
-        if (this.currentTab === "selecionar-data") {
-            this.initCalendar();
-        }
-        
-        // Adicionar lógica para seleção de horário
-        if (this.currentTab === "selecionar-horario") {
-            const horarioButtons = document.querySelectorAll(".btn-horario");
-            horarioButtons.forEach(button => {
-                if (this.selectedHour === button.textContent) {
-                    button.classList.add("selected");
-                }
-                
-                // Corrigido: Adicionando evento de clique diretamente aqui
-                button.addEventListener("click", () => {
-                    this.selectHour(button.textContent);
-                    
-                    // Atualizar visualmente a seleção
-                    horarioButtons.forEach(btn => btn.classList.remove('selected'));
-                    button.classList.add('selected');
-                    
-                    // Habilitar o botão de continuar
-                    const continueBtn = document.querySelector('#selecionar-horario .btn-primary');
-                    if (continueBtn) {
-                        continueBtn.removeAttribute('disabled');
-                    }
-                });
-            });
-        }
+      });
     }
+  }
 
-    // Manipula o envio de formulários
-    handleFormSubmit(form) {
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData);
+  // Converter texto de mês e ano para números
+  parseMonthYear(monthYearText) {
+    const monthNames = [
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro",
+    ];
+    const parts = monthYearText.split(" ");
+    const month = monthNames.indexOf(parts[0]);
+    const year = parseInt(parts[1]);
 
-        console.log("Dados do formulário:", data);
+    return [month, year];
+  }
 
-        const submitBtn = form.querySelector('.btn-primary[type="submit"]');
-        if (submitBtn) {
-            const originalText = submitBtn.textContent;
-            submitBtn.innerHTML = "Enviando...";
-            submitBtn.disabled = true;
-
-            // Verificar qual formulário está sendo enviado
-            if (form.id === "esqueci-senha-form") {
-                // Enviar email de recuperação de senha
-                this.sendPasswordRecoveryEmail(data.email)
-                    .then(() => {
-                        // Redirecionar para a tela de confirmação de email enviado
-                        this.loadTab("email-enviado");
-                    })
-                    .catch(error => {
-                        console.error("Erro ao enviar email:", error);
-                        alert("Erro ao enviar email. Por favor, tente novamente.");
-                        submitBtn.textContent = originalText;
-                        submitBtn.disabled = false;
-                    });
-            } else if (form.id === "login-form") {
-                // Simulação de login bem-sucedido
-                setTimeout(() => {
-                    submitBtn.textContent = originalText;
-                    submitBtn.disabled = false;
-                    this.isLoggedIn = true; // Atualiza o estado de login
-                    this.loadTab("home-logado"); // Redireciona para a home logada
-                }, 2000);
-            } else if (form.id === "cadastro-form") {
-                // Simulação de cadastro bem-sucedido
-                setTimeout(() => {
-                    submitBtn.textContent = originalText;
-                    submitBtn.disabled = false;
-                    this.loadTab("cadastro-confirmado"); // Redireciona para a tela de confirmação de cadastro
-                }, 2000);
-            } else {
-                // Outros formulários
-                setTimeout(() => {
-                    submitBtn.textContent = originalText;
-                    submitBtn.disabled = false;
-                }, 2000);
-            }
-        }
-    }
-
-    // Função para selecionar/desselecionar serviços
-    toggleService(serviceName) {
-        const index = this.selectedServices.indexOf(serviceName);
-        if (index > -1) {
-            this.selectedServices.splice(index, 1); // Remover
-        } else {
-            this.selectedServices.push(serviceName); // Adicionar
-        }
-        this.loadTab("selecionar-servico"); // Recarrega a aba para atualizar a seleção visual
-    }
-
-    // Função para selecionar barbeiro
-    selectBarber(barberName) {
-        this.selectedBarber = barberName;
-        this.loadTab("selecionar-barbeiro"); // Recarrega a aba para atualizar a seleção visual
-    }
-    
-    // Função para selecionar data
-    selectDate(date) {
-        this.selectedDate = date;
-        
-        // Remover seleção anterior
-        const allDays = document.querySelectorAll('.dia');
-        allDays.forEach(day => {
-            day.classList.remove('selected');
-        });
-        
-        // Adicionar seleção ao dia clicado
-        const clickedDay = document.querySelector(`.dia[data-date="${date}"]`);
-        if (clickedDay) {
-            clickedDay.classList.add('selected');
-        }
-        
-        // Habilitar o botão de continuar
-        const continueBtn = document.querySelector('#selecionar-data .btn-primary');
-        if (continueBtn) {
-            continueBtn.removeAttribute('disabled');
-        }
-    }
-    
-    // Função para selecionar horário
-    selectHour(hour) {
-        this.selectedHour = hour;
-    }
-    
-    // Inicializar o calendário com o mês atual
-    initCalendar() {
-        const today = new Date();
-        const currentMonth = today.getMonth();
-        const currentYear = today.getFullYear();
-        
-        this.renderCalendar(currentMonth, currentYear);
-        
-        // Adicionar event listeners para navegação do calendário
-        const prevMonthBtn = document.querySelector('.btn-prev-month');
-        const nextMonthBtn = document.querySelector('.btn-next-month');
-        
-        if (prevMonthBtn && nextMonthBtn) {
-            prevMonthBtn.addEventListener('click', () => {
-                const monthYearText = document.querySelector('.mes-ano-text').textContent;
-                const [month, year] = this.parseMonthYear(monthYearText);
-                
-                let newMonth = month - 1;
-                let newYear = year;
-                
-                if (newMonth < 0) {
-                    newMonth = 11;
-                    newYear--;
-                }
-                
-                this.renderCalendar(newMonth, newYear);
-            });
-            
-            nextMonthBtn.addEventListener('click', () => {
-                const monthYearText = document.querySelector('.mes-ano-text').textContent;
-                const [month, year] = this.parseMonthYear(monthYearText);
-                
-                let newMonth = month + 1;
-                let newYear = year;
-                
-                if (newMonth > 11) {
-                    newMonth = 0;
-                    newYear++;
-                }
-                
-                this.renderCalendar(newMonth, newYear);
-            });
-        }
-    }
-    
-    // Renderizar o calendário para um mês específico
-    renderCalendar(month, year) {
-        const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const firstDayOfMonth = new Date(year, month, 1).getDay();
-        
-        // Atualizar texto do mês e ano
-        const monthYearText = document.querySelector('.mes-ano-text');
-        if (monthYearText) {
-            monthYearText.textContent = `${monthNames[month]} ${year}`;
-        }
-        
-        // Gerar os dias do calendário
-        let daysHTML = '';
-        
-        // Espaços em branco para os dias antes do primeiro dia do mês
-        for (let i = 0; i < firstDayOfMonth; i++) {
-            daysHTML += '<div class="dia empty"></div>';
-        }
-        
-        // Dias do mês
-        for (let i = 1; i <= daysInMonth; i++) {
-            const date = `${year}-${(month + 1).toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
-            const isSelected = date === this.selectedDate ? 'selected' : '';
-            daysHTML += `<div class="dia ${isSelected}" data-date="${date}">${i}</div>`;
-        }
-        
-        // Atualizar o conteúdo do calendário
-        const diasMesElement = document.querySelector('.dias-mes');
-        if (diasMesElement) {
-            diasMesElement.innerHTML = daysHTML;
-            
-            // Adicionar event listeners aos dias após renderizar
-            const dias = diasMesElement.querySelectorAll('.dia:not(.empty)');
-            dias.forEach(dia => {
-                dia.addEventListener('click', () => {
-                    const date = dia.getAttribute('data-date');
-                    this.selectDate(date);
-                });
-            });
-        }
-    }
-    
-    // Converter texto de mês e ano para números
-    parseMonthYear(monthYearText) {
-        const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-        const parts = monthYearText.split(' ');
-        const month = monthNames.indexOf(parts[0]);
-        const year = parseInt(parts[1]);
-        
-        return [month, year];
-    }
-
-    // Conteúdo da tela inicial (deslogado)
-    getHomeDeslogadoContent() {
-        return `
+  // Conteúdo da tela inicial (deslogado)
+  getHomeDeslogadoContent() {
+    return `
             <div class="tab-content active" id="home-deslogado">
                 <!-- Botão Entrar no canto superior esquerdo -->
                 <button class="btn-entrar" onclick="loadTab('login')">Entrar</button>
                 
                 <!-- Ícone Instagram no canto superior direito -->
-                <div class="instagram-icon"><a href="https://www.instagram.com/gabriel_lima20/>"<img src="assets/images/instagram-new2.png" alt="Instagram"></a></div>
+                <div class="instagram-icon">
+                    <a href="https://www.instagram.com/gabriel_lima20/" target="_blank" rel="noopener noreferrer">
+                         <img src="assets/images/instagram-new2.png" alt="Instagram">
+                    </a>
+                </div>
                 
                 <!-- Logo circular -->
                 <div class="logo">
@@ -413,11 +452,11 @@ class BarberApp {
                 <button class="btn-contato" onclick="loadTab('contato')">Contato</button>
             </div>
         `;
-    }
+  }
 
-    // Conteúdo da tela inicial (logado)
-    getHomeLogadoContent() {
-        return `
+  // Conteúdo da tela inicial (logado)
+  getHomeLogadoContent() {
+    return `
             <div class="tab-content active" id="home-logado">
                 <!-- Ícone de perfil no canto superior esquerdo -->
                 <div class="user-icon" onclick="loadUserProfile()">
@@ -425,7 +464,11 @@ class BarberApp {
                 </div>
                 
                 <!-- Ícone Instagram no canto superior direito -->
-              <div class="instagram-icon"><a href="https://www.instagram.com/gabriel_lima20/>"<img src="assets/images/instagram-new2.png" alt="Instagram"></a></div> 
+             <div class="instagram-icon">
+                    <a href="https://www.instagram.com/gabriel_lima20/" target="_blank" rel="noopener noreferrer">
+                         <img src="assets/images/instagram-new2.png" alt="Instagram">
+                    </a>
+                </div>
                 <!-- Logo circular -->
                 <div class="logo">
                     <img src="assets/images/logo-bigode-new.png" alt="Logo Bigode Cortes">
@@ -447,11 +490,11 @@ class BarberApp {
                 <button class="btn-contato" onclick="loadTab('contato')">Contato</button>
             </div>
         `;
-    }
+  }
 
-    // Conteúdo da tela de perfil do usuário
-    getPerfilUsuarioContent() {
-        return `
+  // Conteúdo da tela de perfil do usuário
+  getPerfilUsuarioContent() {
+    return `
             <div class="tab-content active" id="perfil-usuario">
                 <div class="form-container">
                   
@@ -490,11 +533,11 @@ class BarberApp {
                 </div>
             </div>
         `;
-    }
+  }
 
-    // Conteúdo da tela de login
-    getLoginContent() {
-        return `
+  // Conteúdo da tela de login
+  getLoginContent() {
+    return `
             <div class="tab-content active" id="login">
                 <div class="form-container">
                     <!-- Botão voltar no canto superior esquerdo -->
@@ -524,11 +567,11 @@ class BarberApp {
                 </div>
             </div>
         `;
-    }
+  }
 
-    // Conteúdo da tela de cadastro
-    getCadastroContent() {
-        return `
+  // Conteúdo da tela de cadastro
+  getCadastroContent() {
+    return `
             <div class="tab-content active" id="cadastro">
                 <div class="form-container">
                     <!-- Botão voltar no canto superior esquerdo -->
@@ -570,11 +613,11 @@ class BarberApp {
                 </div>
             </div>
         `;
-    }
+  }
 
-    // Conteúdo da tela de confirmação de cadastro
-    getCadastroConfirmadoContent() {
-        return `
+  // Conteúdo da tela de confirmação de cadastro
+  getCadastroConfirmadoContent() {
+    return `
             <div class="tab-content active" id="cadastro-confirmado">
                 <div class="form-container">
                     <!-- Botão voltar no canto superior esquerdo -->
@@ -598,11 +641,11 @@ class BarberApp {
                 </div>
             </div>
         `;
-    }
+  }
 
-    // Conteúdo da tela de esqueci senha
-    getEsqueciSenhaContent() {
-        return `
+  // Conteúdo da tela de esqueci senha
+  getEsqueciSenhaContent() {
+    return `
             <div class="tab-content active" id="esqueci-senha">
                 <div class="form-container">
                     <!-- Botão voltar no canto superior esquerdo -->
@@ -629,11 +672,11 @@ class BarberApp {
                 </div>
             </div>
         `;
-    }
-    
-    // Conteúdo da tela de confirmação de email enviado
-    getEmailEnviadoContent() {
-        return `
+  }
+
+  // Conteúdo da tela de confirmação de email enviado
+  getEmailEnviadoContent() {
+    return `
             <div class="tab-content active" id="email-enviado">
                 <div class="form-container">
                     <!-- Botão voltar no canto superior esquerdo -->
@@ -657,11 +700,11 @@ class BarberApp {
                 </div>
             </div>
         `;
-    }
+  }
 
-    // Conteúdo da tela de agendamento
-    getAgendarHorarioContent() {
-        return `
+  // Conteúdo da tela de agendamento
+  getAgendarHorarioContent() {
+    return `
             <div class="tab-content active" id="agendar-horario">
                 <div class="form-container">
                     <!-- Botão voltar no canto superior esquerdo -->
@@ -681,14 +724,19 @@ class BarberApp {
                 </div>
             </div>
         `;
-    }
+  }
 
-    // Conteúdo da tela de seleção de serviço
-    getSelecionarServicoContent() {
-        const selectedCount = this.selectedServices.length;
-        const buttonText = selectedCount > 0 ? `Continuar (${selectedCount} selecionado${selectedCount > 1 ? 's' : ''})` : "Continuar";
+  // Conteúdo da tela de seleção de serviço
+  getSelecionarServicoContent() {
+    const selectedCount = this.selectedServices.length;
+    const buttonText =
+      selectedCount > 0
+        ? `Continuar (${selectedCount} selecionado${
+            selectedCount > 1 ? "s" : ""
+          })`
+        : "Continuar";
 
-        return `
+    return `
             <div class="tab-content active" id="selecionar-servico">
                 <div class="form-container">
                     <!-- Botão voltar no canto superior esquerdo -->
@@ -711,15 +759,17 @@ class BarberApp {
                         <button class="btn-servico" onclick="toggleService('nevou')" data-servico="nevou">NEVOU</button>
                     </div>
                     
-                    <button class="btn-primary" onclick="loadTab('selecionar-barbeiro')" ${selectedCount === 0 ? 'disabled' : ''}>${buttonText}</button>
+                    <button class="btn-primary" onclick="loadTab('selecionar-barbeiro')" ${
+                      selectedCount === 0 ? "disabled" : ""
+                    }>${buttonText}</button>
                 </div>
             </div>
         `;
-    }
+  }
 
-    // Conteúdo da tela de seleção de barbeiro
-    getSelecionarBarbeiroContent() {
-        return `
+  // Conteúdo da tela de seleção de barbeiro
+  getSelecionarBarbeiroContent() {
+    return `
             <div class="tab-content active" id="selecionar-barbeiro">
                 <div class="form-container">
                     <!-- Botão voltar no canto superior esquerdo -->
@@ -746,21 +796,36 @@ class BarberApp {
                         <!-- Adicione mais barbeiros conforme necessário -->
                     </div>
                     
-                    <button class="btn-primary" onclick="loadTab('selecionar-data')" ${this.selectedBarber === null ? 'disabled' : ''}>Continuar</button>
+                    <button class="btn-primary" onclick="loadTab('selecionar-data')" ${
+                      this.selectedBarber === null ? "disabled" : ""
+                    }>Continuar</button>
                 </div>
             </div>
         `;
-    }
+  }
 
-    // Conteúdo da tela de seleção de data
-    getSelecionarDataContent() {
-        // Obter o mês e ano atual
-        const today = new Date();
-        const currentMonth = today.getMonth();
-        const currentYear = today.getFullYear();
-        const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-        
-        return `
+  // Conteúdo da tela de seleção de data
+  getSelecionarDataContent() {
+    // Obter o mês e ano atual
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    const monthNames = [
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro",
+    ];
+
+    return `
             <div class="tab-content active" id="selecionar-data">
                 <div class="form-container">
                     <!-- Botão voltar no canto superior esquerdo -->
@@ -778,7 +843,9 @@ class BarberApp {
                     <div class="calendario">
                         <div class="mes-nav">
                             <button class="btn-nav btn-prev-month">&lt;</button>
-                            <span class="mes-ano-text">${monthNames[currentMonth]} ${currentYear}</span>
+                            <span class="mes-ano-text">${
+                              monthNames[currentMonth]
+                            } ${currentYear}</span>
                             <button class="btn-nav btn-next-month">&gt;</button>
                         </div>
                         <div class="dias-semana">
@@ -795,15 +862,17 @@ class BarberApp {
                         </div>
                     </div>
                     
-                    <button class="btn-primary" onclick="loadTab('selecionar-horario')" ${this.selectedDate === null ? 'disabled' : ''}>Continuar</button>
+                    <button class="btn-primary" onclick="loadTab('selecionar-horario')" ${
+                      this.selectedDate === null ? "disabled" : ""
+                    }>Continuar</button>
                 </div>
             </div>
         `;
-    }
+  }
 
-    // Conteúdo da tela de seleção de horário
-    getSelecionarHorarioContent() {
-        return `
+  // Conteúdo da tela de seleção de horário
+  getSelecionarHorarioContent() {
+    return `
             <div class="tab-content active" id="selecionar-horario">
                 <div class="form-container">
                     <!-- Botão voltar no canto superior esquerdo -->
@@ -831,18 +900,24 @@ class BarberApp {
                         <button class="btn-horario" data-hour="19:00">19:00</button>
                     </div>
                     
-                    <button class="btn-primary" onclick="loadTab('confirmacao')" ${this.selectedHour === null ? 'disabled' : ''}>Continuar</button>
+                    <button class="btn-primary" onclick="loadTab('confirmacao')" ${
+                      this.selectedHour === null ? "disabled" : ""
+                    }>Continuar</button>
                 </div>
             </div>
         `;
-    }
+  }
 
-    // Conteúdo da tela de confirmação
-    getConfirmacaoContent() {
-        const servicosSelecionados = this.selectedServices.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(", ");
-        const formattedDate = this.selectedDate ? this.formatDate(this.selectedDate) : "Data não selecionada";
-        
-        return `
+  // Conteúdo da tela de confirmação
+  getConfirmacaoContent() {
+    const servicosSelecionados = this.selectedServices
+      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+      .join(", ");
+    const formattedDate = this.selectedDate
+      ? this.formatDate(this.selectedDate)
+      : "Data não selecionada";
+
+    return `
             <div class="tab-content active" id="confirmacao">
                 <div class="form-container">
                     <!-- Botão voltar no canto superior esquerdo -->
@@ -859,20 +934,27 @@ class BarberApp {
                     
                     <div class="agendamento-info">
                         <p><strong>Data:</strong> ${formattedDate}</p>
-                        <p><strong>Horário:</strong> ${this.selectedHour || "Horário não selecionado"}</p>
+                        <p><strong>Horário:</strong> ${
+                          this.selectedHour || "Horário não selecionado"
+                        }</p>
                         <p><strong>Serviços:</strong> ${servicosSelecionados}</p>
-                        <p><strong>Barbeiro:</strong> ${this.selectedBarber ? this.selectedBarber.charAt(0).toUpperCase() + this.selectedBarber.slice(1) : 'Não selecionado'}</p>
+                        <p><strong>Barbeiro:</strong> ${
+                          this.selectedBarber
+                            ? this.selectedBarber.charAt(0).toUpperCase() +
+                              this.selectedBarber.slice(1)
+                            : "Não selecionado"
+                        }</p>
                     </div>
                     
                     <button class="btn-primary" onclick="loadTab('agendamento-confirmado')">Confirmar</button>
                 </div>
             </div>
         `;
-    }
-    
-    // Conteúdo da tela de agendamento confirmado
-    getAgendamentoConfirmadoContent() {
-        return `
+  }
+
+  // Conteúdo da tela de agendamento confirmado
+  getAgendamentoConfirmadoContent() {
+    return `
             <div class="tab-content active" id="agendamento-confirmado">
                 <div class="form-container">
                     <!-- Botão voltar no canto superior esquerdo -->
@@ -896,11 +978,11 @@ class BarberApp {
                 </div>
             </div>
         `;
-    }
+  }
 
-    // Conteúdo da tela de contato
-    getContatoContent() {
-        return `
+  // Conteúdo da tela de contato
+  getContatoContent() {
+    return `
             <div class="tab-content active" id="contato">
                 <div class="form-container">
                     <!-- Botão voltar no canto superior esquerdo -->
@@ -924,11 +1006,11 @@ class BarberApp {
                 </div>
             </div>
         `;
-    }
+  }
 
-    // Conteúdo da tela de página não encontrada
-    getNotFoundContent() {
-        return `
+  // Conteúdo da tela de página não encontrada
+  getNotFoundContent() {
+    return `
             <div class="tab-content active">
                 <div class="form-container">
                     <!-- Botão voltar no canto superior esquerdo -->
@@ -942,16 +1024,16 @@ class BarberApp {
                 </div>
             </div>
         `;
-    }
-    
-    // Formatar data para exibição
-    formatDate(dateString) {
-        const [year, month, day] = dateString.split('-');
-        return `${day}/${month}/${year}`;
-    }
+  }
+
+  // Formatar data para exibição
+  formatDate(dateString) {
+    const [year, month, day] = dateString.split("-");
+    return `${day}/${month}/${year}`;
+  }
 }
 
 // Inicializa a aplicação quando o DOM estiver carregado
-document.addEventListener('DOMContentLoaded', () => {
-    new BarberApp();
+document.addEventListener("DOMContentLoaded", () => {
+  new BarberApp();
 });

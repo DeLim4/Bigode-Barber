@@ -390,7 +390,7 @@ class BarberApp {
                 <button class="btn-entrar" onclick="loadTab('login')">Entrar</button>
                 
                 <!-- Ícone Instagram no canto superior direito -->
-                <div class="instagram-icon"><img src="assets/images/instagram-new2.png" alt="Instagram"></div>
+                <div class="instagram-icon"><a href="https://www.instagram.com/gabriel_lima20/>"<img src="assets/images/instagram-new2.png" alt="Instagram"></a></div>
                 
                 <!-- Logo circular -->
                 <div class="logo">
@@ -425,8 +425,7 @@ class BarberApp {
                 </div>
                 
                 <!-- Ícone Instagram no canto superior direito -->
-                <div class="instagram-icon"><img src="assets/images/instagram-new2.png" alt="Instagram"></div>
-                
+              <div class="instagram-icon"><a href="https://www.instagram.com/gabriel_lima20/>"<img src="assets/images/instagram-new2.png" alt="Instagram"></a></div> 
                 <!-- Logo circular -->
                 <div class="logo">
                     <img src="assets/images/logo-bigode-new.png" alt="Logo Bigode Cortes">
@@ -437,7 +436,7 @@ class BarberApp {
                 
                 <!-- texto -->
                 <p>Um novo conceito em barbearia</p>
-                
+                 
                 <!-- Botão principal de agendamento -->
                 <button class="btn-primary" onclick="loadTab('selecionar-servico')">Agende seu horário</button>
                 

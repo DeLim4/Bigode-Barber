@@ -113,6 +113,7 @@ class BarberApp {
     this.app.innerHTML = content;
     this.addEventListeners();
   }
+  
 
   // Função para carregar o perfil do usuário
   loadUserProfile() {
@@ -207,34 +208,69 @@ class BarberApp {
 
       // Verificar qual formulário está sendo enviado
       if (form.id === "esqueci-senha-form") {
-        // Enviar email de recuperação de senha
-        this.sendPasswordRecoveryEmail(data.email)
-          .then(() => {
-            // Redirecionar para a tela de confirmação de email enviado
-            this.loadTab("email-enviado");
-          })
-          .catch((error) => {
-            console.error("Erro ao enviar email:", error);
-            alert("Erro ao enviar email. Por favor, tente novamente.");
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-          });
-      } else if (form.id === "login-form") {
-        // Simulação de login bem-sucedido
-        setTimeout(() => {
-          submitBtn.textContent = originalText;
-          submitBtn.disabled = false;
-          this.isLoggedIn = true; // Atualiza o estado de login
-          this.loadTab("home-logado"); // Redireciona para a home logada
-        }, 2000);
-      } else if (form.id === "cadastro-form") {
-        // Simulação de cadastro bem-sucedido
-        setTimeout(() => {
-          submitBtn.textContent = originalText;
-          submitBtn.disabled = false;
-          this.loadTab("cadastro-confirmado"); // Redireciona para a tela de confirmação de cadastro
-        }, 2000);
-      } else {
+  // Enviar email de recuperação de senha usando a API
+  window.api.recuperarSenha(data.email)
+    .then(() => {
+      // Redirecionar para a tela de confirmação de email enviado
+      this.loadTab("email-enviado");
+    })
+    .catch((error) => {
+      console.error("Erro ao enviar email:", error);
+      alert(error.message || "Erro ao enviar email. Por favor, tente novamente.");
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+    });
+}
+ else if (form.id === "login-form") {
+  // Obter email e senha do formulário
+  const email = data.email;
+  const senha = data.password;
+  
+  // Chamar a API de login
+  window.api.login(email, senha)
+    .then(response => {
+      // Login bem-sucedido
+      this.isLoggedIn = true;
+      this.userName = response.usuario.nome; // Salvar o nome do usuário
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+      this.loadTab("home-logado");
+    })
+    .catch(error => {
+      // Erro de login
+      alert(error.message || "Erro ao fazer login. Verifique suas credenciais.");
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+    });
+}
+else if (form.id === "cadastro-form") {
+  // Obter dados do formulário
+  const nome = data.nome;
+  const email = data.email;
+  const telefone = data.telefone;
+  const senha = data.password;
+  if (data.password !== data.confirm_password) {
+  alert("As senhas não coincidem.");
+  submitBtn.textContent = originalText;
+  submitBtn.disabled = false;
+  return;
+}
+  // Chamar a API de cadastro
+  window.api.cadastrar(nome, email, telefone, senha)
+    .then(() => {
+      // Cadastro bem-sucedido
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+      this.loadTab("cadastro-confirmado");
+    })
+    .catch(error => {
+      // Erro de cadastro
+      alert(error.message || "Erro ao realizar cadastro. Tente novamente.");
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+    });
+}
+ else {
         // Outros formulários
         setTimeout(() => {
           submitBtn.textContent = originalText;
@@ -243,6 +279,7 @@ class BarberApp {
       }
     }
   }
+  
 
   // Função para selecionar/desselecionar serviços
   toggleService(serviceName) {
@@ -881,19 +918,19 @@ class BarberApp {
                     
                     <h2>Selecione um horário</h2>
                     
-                    <div class="horarios-grid">
-                        <button class="btn-horario" data-hour="08:00">08:00</button>
-                        <button class="btn-horario" data-hour="09:00">09:00</button>
-                        <button class="btn-horario" data-hour="10:00">10:00</button>
-                        <button class="btn-horario" data-hour="11:00">11:00</button>
-                        <button class="btn-horario" data-hour="14:00">14:00</button>
-                        <button class="btn-horario" data-hour="15:00">15:00</button>
-                        <button class="btn-horario" data-hour="16:00">16:00</button>
-                        <button class="btn-horario" data-hour="17:00">17:00</button>
-                        <button class="btn-horario" data-hour="18:00">18:00</button>
-                        <button class="btn-horario" data-hour="19:00">19:00</button>
-                    </div>
-                    
+                 <div class="horarios-grid">
+                    <button class="btn-horario" data-hour="19:00">19:00</button>
+                    <button class="btn-horario" data-hour="19:30">19:30</button>
+                    <button class="btn-horario" data-hour="20:00">20:00</button>
+                    <button class="btn-horario" data-hour="20:30">20:30</button>
+                    <button class="btn-horario" data-hour="21:00">21:00</button>
+                    <button class="btn-horario" data-hour="21:30">21:30</button>
+                    <button class="btn-horario" data-hour="22:00">22:00</button>
+                    <button class="btn-horario" data-hour="22:30">22:30</button>
+                    <button class="btn-horario" data-hour="23:00">23:00</button>
+                    <button class="btn-horario" data-hour="23:30">23:30</button>
+                </div>
+
                     <button class="btn-primary" onclick="loadTab('confirmacao')" ${
                       this.selectedHour === null ? "disabled" : ""
                     }>Continuar</button>

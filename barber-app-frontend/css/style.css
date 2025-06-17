@@ -534,8 +534,8 @@ a:hover {
     }
     
     .logo {
-        width: 100px;
-        height: 100px;
+        width: 201px;
+        height: 201px;
     }
     
     .btn-primary {
@@ -589,7 +589,7 @@ a:hover {
 
 .barbeiro-card {
     position: relative;
-    background-image: url(/assets/images/barber.jpg);
+    background-image: url(../assets/images/barber.jpg);
     background-size: cover;
     background-repeat: no-repeat;
     min-height: 20vh;
@@ -757,3 +757,4 @@ a:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
 }
+

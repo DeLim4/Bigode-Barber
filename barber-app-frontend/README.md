@@ -32,6 +32,7 @@ frontend/
 │   └── style.css      # Estilos CSS
 ├── js/
 │   └── script.js      # Lógica JavaScript
+    └── api.js 
 └── assets/
     └── images/        # Imagens do projeto
 ```

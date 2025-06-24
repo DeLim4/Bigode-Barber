@@ -52,40 +52,88 @@ const transporter = nodemailer.createTransport({
 });
 
 // Rotas de autenticação
-app.post('/api/cadastro', async (req, res) => {
+app.post("/api/agendamentos", verificarToken, async (req, res) => {
   try {
-    const { nome, email, telefone, senha } = req.body;
-    
-    // Verificar se o email já está cadastrado
-    const [usuarios] = await pool.execute('SELECT * FROM usuarios WHERE email = ?', [email]);
-    
-    if (usuarios.length > 0) {
-      return res.status(400).json({ mensagem: 'Email já cadastrado' });
-    }
-    
-    // Hash da senha
-    const salt = await bcrypt.genSalt(10);
-    const senhaHash = await bcrypt.hash(senha, salt);
-    
-    // Inserir usuário no banco
-    const [result] = await pool.execute(
-      'INSERT INTO usuarios (nome, email, telefone, senha) VALUES (?, ?, ?, ?)',
-      [nome, email, telefone, senhaHash]
-    );
-    
-    res.status(201).json({ 
-      mensagem: 'Usuário cadastrado com sucesso',
-      usuario: { id: result.insertId, nome, email, telefone }
+    const { barbeiro_id, data_agendamento, hora_agendamento, servicos } = req.body;
+    const usuario_id = req.usuario.id;
+
+    // --- ADICIONE ESTES LOGS AQUI ---
+    console.log("Requisição de agendamento recebida:", {
+      usuario_id,
+      barbeiro_id,
+      data_agendamento,
+      hora_agendamento,
+      servicos,
     });
+    // --- FIM DOS LOGS ---
+
+    // Verificar se o horário está disponível
+    const [agendamentosExistentes] = await pool.execute(
+      "SELECT * FROM agendamentos WHERE barbeiro_id = ? AND data_agendamento = ? AND hora_agendamento = ? AND status = \"agendado\"",
+      [barbeiro_id, data_agendamento, hora_agendamento]
+    );
+
+    if (agendamentosExistentes.length > 0) {
+      console.log("Horário já agendado."); // ADICIONE ESTE LOG TAMBÉM
+      return res.status(400).json({ mensagem: "Horário já agendado" });
+    }
+
+    // Iniciar transação
+    const connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    try {
+      // Inserir agendamento
+      const [result] = await connection.execute(
+        "INSERT INTO agendamentos (usuario_id, barbeiro_id, data_agendamento, hora_agendamento) VALUES (?, ?, ?, ?)",
+        [usuario_id, barbeiro_id, data_agendamento, hora_agendamento]
+      );
+
+      const agendamento_id = result.insertId;
+      console.log("Agendamento inserido com ID:", agendamento_id); // ADICIONE ESTE LOG
+
+      // Inserir serviços do agendamento
+      for (const servico_id of servicos) {
+        await connection.execute(
+          "INSERT INTO agendamento_servicos (agendamento_id, servico_id) VALUES (?, ?)",
+          [agendamento_id, servico_id]
+        );
+        console.log("Serviço inserido:", servico_id); // ADICIONE ESTE LOG
+      }
+
+      // Commit da transação
+      await connection.commit();
+      console.log("Transação de agendamento confirmada."); // ADICIONE ESTE LOG
+
+      res.status(201).json({
+        mensagem: "Agendamento criado com sucesso",
+        agendamento: {
+          id: agendamento_id,
+          usuario_id,
+          barbeiro_id,
+          data_agendamento,
+          hora_agendamento,
+          servicos,
+        },
+      });
+    } catch (error) {
+      // Rollback em caso de erro
+      await connection.rollback();
+      console.error("Erro na transação de agendamento, rollback:", error); // ADICIONE ESTE LOG
+      throw error;
+    } finally {
+      connection.release();
+    }
   } catch (error) {
-    console.error('Erro ao cadastrar usuário:', error);
-    res.status(500).json({ mensagem: 'Erro ao cadastrar usuário' });
+    console.error("Erro ao criar agendamento (fora da transação):", error); // ADICIONE ESTE LOG
+    res.status(500).json({ mensagem: "Erro ao criar agendamento" });
   }
 });
 
 app.post('/api/login', async (req, res) => {
   try {
     const { email, senha } = req.body;
+    console.log('Conteúdo de req.body na rota de login:', req.body);
     
     // Buscar usuário pelo email
     const [usuarios] = await pool.execute('SELECT * FROM usuarios WHERE email = ?', [email]);
@@ -95,6 +143,7 @@ app.post('/api/login', async (req, res) => {
     }
     
     const usuario = usuarios[0];
+    console.log("Senha do usuário recuperada do banco de dados:", usuario.senha);
     
     // Verificar senha
     const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
@@ -606,3 +655,44 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
+
+
+app.post("/api/cadastro", async (req, res) => {
+  try {
+    const { nome, email, telefone, senha } = req.body; // Certifique-se de que o nome do campo é 'senha'
+
+    // Verificar se o email já existe
+    const [usuariosExistentes] = await pool.execute(
+      "SELECT * FROM usuarios WHERE email = ?",
+      [email]
+    );
+
+    if (usuariosExistentes.length > 0) {
+      return res.status(400).json({ mensagem: "Email já cadastrado" });
+    }
+
+    // Hash da senha antes de salvar no banco de dados
+    const salt = await bcrypt.genSalt(10);
+    const senhaHash = await bcrypt.hash(senha, salt); // Usa 'senha' aqui
+
+    // Inserir novo usuário no banco de dados
+    const [result] = await pool.execute(
+      "INSERT INTO usuarios (nome, email, telefone, senha) VALUES (?, ?, ?, ?)",
+      [nome, email, telefone, senhaHash]
+    );
+
+    res.status(201).json({
+      mensagem: "Usuário cadastrado com sucesso",
+      usuario: {
+        id: result.insertId,
+        nome,
+        email,
+        telefone,
+      },
+    });
+  } catch (error) {
+    console.error("Erro ao cadastrar usuário:", error);
+    res.status(500).json({ mensagem: "Erro ao cadastrar usuário" });
+  }
+});
+

@@ -220,15 +220,13 @@ class BarberApp {
       submitBtn.textContent = originalText;
       submitBtn.disabled = false;
     });
-}
- else if (form.id === "login-form") {
+  } else if (form.id === "login-form") {
   // Obter email e senha do formulário
   const email = data.email;
-  const senha = data.password;
+  const password = data.password;
   
-  // Chamar a API de login
-  window.api.login(email, senha)
-    .then(response => {
+  // Chamar a API de login     
+   window.api.login(email, password)  .then(response => {
       // Login bem-sucedido
       this.isLoggedIn = true;
       this.userName = response.usuario.nome; // Salvar o nome do usuário
@@ -243,20 +241,27 @@ class BarberApp {
       submitBtn.disabled = false;
     });
 }
+
 else if (form.id === "cadastro-form") {
   // Obter dados do formulário
   const nome = data.nome;
   const email = data.email;
   const telefone = data.telefone;
-  const senha = data.password;
+  const password = data.password;
+  
+
   if (data.password !== data.confirm_password) {
-  alert("As senhas não coincidem.");
-  submitBtn.textContent = originalText;
-  submitBtn.disabled = false;
-  return;
-}
+    alert("As senhas não coincidem.");
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+    return;
+  }
+  console.log("Senha:", data.password);
+console.log("Confirmação:", data.confirm_password);
+
+
   // Chamar a API de cadastro
-  window.api.cadastrar(nome, email, telefone, senha)
+  window.api.cadastrar(nome, email, telefone, password)
     .then(() => {
       // Cadastro bem-sucedido
       submitBtn.textContent = originalText;
@@ -617,7 +622,7 @@ else if (form.id === "cadastro-form") {
                     
                     <h2>Cadastre-se agora</h2>
                     
-                    <form id="cadastro-form">
+                    <form id="cadastro-form"> 
                         <div class="form-group">
                             <input type="text" name="nome" placeholder="Nome Completo" required>
                         </div>
